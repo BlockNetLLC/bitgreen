@@ -1,0 +1,20 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/bitgreen_bg.qm</file>
+        <file alias="de">locale/bitgreen_de.qm</file>
+        <file alias="en">locale/bitgreen_en.qm</file>
+        <file alias="es">locale/bitgreen_es.qm</file>
+        <file alias="fi">locale/bitgreen_fi.qm</file>
+        <file alias="fr">locale/bitgreen_fr.qm</file>
+        <file alias="it">locale/bitgreen_it.qm</file>
+        <file alias="ja">locale/bitgreen_ja.qm</file>
+        <file alias="pl">locale/bitgreen_pl.qm</file>
+        <file alias="pt">locale/bitgreen_pt.qm</file>
+        <file alias="ru">locale/bitgreen_ru.qm</file>
+        <file alias="sk">locale/bitgreen_sk.qm</file>
+        <file alias="sv">locale/bitgreen_sv.qm</file>
+        <file alias="vi">locale/bitgreen_vi.qm</file>
+        <file alias="zh_CN">locale/bitgreen_zh_CN.qm</file>
+        <file alias="zh_TW">locale/bitgreen_zh_TW.qm</file>
+    </qresource>
+</RCC>

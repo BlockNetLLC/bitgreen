@@ -1142,14 +1142,29 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 CAmount GetBlockSubsidy(int nPrevHeight, const Consensus::Params& consensusParams, bool fSuperblockPartOnly)
 {
-    CAmount nSubsidy = 1000 * COIN;
+    if (Params().NetworkIDString() == "regtest")
+        return 50 * COIN;
 
+    // TODO: BitGreen - Update with money supply
+    // premine 10M for testing
+    if (nPrevHeight == 0)
+        return 10000000 * COIN;
+
+    int halvings = nPrevHeight / 210000;
+    // Force block reward to zero when right shift is undefined.
+    if (halvings >= 64)
+        return 0;
+
+    CAmount nSubsidy = 50 * COIN;
+    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+    nSubsidy >>= halvings;
     return nSubsidy;
 }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
-    return blockValue * 0.0;
+    CAmount ret = blockValue/5; // start at 20%
+    return ret;
 }
 
 bool IsInitialBlockDownload()
@@ -2980,9 +2995,6 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
         pindexNew->nStakeTime = 0;
     }
 
-    //update previous block pointer
-    //        pindexNew->pprev->pnext = pindexNew;
-
     // ppcoin: compute chain trust score
     pindexNew->bnChainTrust = (pindexNew->pprev ? pindexNew->pprev->bnChainTrust : ArithToUint256(0 + pindexNew->GetBlockTrust()));
 
@@ -3008,6 +3020,8 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
     if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum)) {
         LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
+        LogPrintf("pindexNew->nStakeModifierChecksum = %08x\n", pindexNew->nStakeModifierChecksum);
+    } else {
         LogPrintf("pindexNew->nStakeModifierChecksum = %08x\n", pindexNew->nStakeModifierChecksum);
     }
 
@@ -3227,10 +3241,12 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     }
 
     // Check timestamp
+#if 0
     int nBlocktimeDelta = abs(GetAdjustedTime() - block.GetBlockTime());
     if (nBlocktimeDelta > (block.IsProofOfWork() ? MAX_FUTUREDRIFT_POW : MAX_FUTUREDRIFT_POS))
         return state.Invalid(error("%s : block timestamp deviates too far from the present", __func__),
                              REJECT_INVALID, "timerange-invalid");
+#endif 
 
     // All potential-corruption validation must be done before we do any
     // transaction validation, as otherwise we may mark the header as invalid
